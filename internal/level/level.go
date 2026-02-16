@@ -4,15 +4,21 @@ import (
 	"image"
 )
 
+// PalmTree is a decorative tree position (base X,Y in world coords).
+type PalmTree struct {
+	X, Y float64
+}
+
 // Level holds platform and goal data for one level.
 type Level struct {
-	Platforms   []image.Rectangle
-	Goal        image.Rectangle
-	Width       int
-	Height      int
-	StartX      float64
-	StartY      float64
-	DeathY      float64 // player dies if Y > DeathY
+	Platforms  []image.Rectangle
+	Goal       image.Rectangle
+	PalmTrees  []PalmTree
+	Width      int
+	Height     int
+	StartX     float64
+	StartY     float64
+	DeathY     float64 // player dies if Y > DeathY
 }
 
 // FirstLevel returns the first level: 4 screens wide, complex layout.
@@ -55,9 +61,20 @@ func FirstLevel(screenW, screenH int) *Level {
 	startX := 64.0
 	startY := float64(floorY - 40 - 32) // above first small platform
 
+	palms := []PalmTree{
+		{X: 30, Y: float64(floorY)},
+		{X: 450, Y: float64(floorY)},
+		{X: 870, Y: float64(floorY)},
+		{X: 1500, Y: float64(floorY)},
+		{X: 1900, Y: float64(floorY)},
+		{X: 2400, Y: float64(floorY)},
+		{X: 4800, Y: float64(floorY)},
+	}
+
 	return &Level{
 		Platforms: platforms,
 		Goal:      goal,
+		PalmTrees: palms,
 		Width:     w,
 		Height:    h,
 		StartX:    startX,
@@ -183,9 +200,19 @@ func SecondLevel(screenW, screenH int) *Level {
 	startX := 80.0
 	startY := float64(floorY - 40)
 
+	palms := []PalmTree{
+		{X: 100, Y: float64(floorY)},
+		{X: 750, Y: float64(floorY)},
+		{X: 1250, Y: float64(floorY - 100)},
+		{X: 2450, Y: float64(floorY)},
+		{X: 3650, Y: float64(floorY)},
+		{X: 4000, Y: float64(floorY)},
+	}
+
 	return &Level{
 		Platforms: platforms,
 		Goal:      goal,
+		PalmTrees: palms,
 		Width:     w,
 		Height:    h,
 		StartX:    startX,
@@ -206,55 +233,64 @@ func ThirdLevel(screenW, screenH int) *Level {
 		image.Rect(0, floorY, 160, h),
 
 		// Screen 1: precision hops on small floating platforms with big gaps
-		image.Rect(240, floorY-80, 310, floorY-40),
-		image.Rect(400, floorY-160, 460, floorY-120),
-		image.Rect(540, floorY-80, 600, floorY-40),
-		image.Rect(700, floorY-180, 760, floorY-140),
-		image.Rect(850, floorY-100, 910, floorY-60),
+		image.Rect(240, floorY-80, 310, floorY-40),   // 80px up from start
+		image.Rect(400, floorY-150, 460, floorY-110),  // 70px up
+		image.Rect(540, floorY-80, 600, floorY-40),    // 70px down
+		image.Rect(700, floorY-155, 760, floorY-115),  // 75px up (was 100, impossible)
+		image.Rect(850, floorY-100, 910, floorY-60),   // 55px down
 
-		// Screen 2: ascending tower -- tiny ledges going up
-		image.Rect(1000, floorY-60, 1060, floorY-20),
-		image.Rect(1100, floorY-140, 1150, floorY-100),
-		image.Rect(1200, floorY-220, 1250, floorY-180),
-		image.Rect(1290, floorY-310, 1350, floorY-270),
-		image.Rect(1400, floorY-400, 1460, floorY-360),
+		// Screen 2: ascending tower -- tiny ledges going up (max 80px per step)
+		image.Rect(1000, floorY-60, 1060, floorY-20),   // 40px down
+		image.Rect(1100, floorY-140, 1150, floorY-100),  // 80px up
+		image.Rect(1200, floorY-220, 1250, floorY-180),  // 80px up
+		image.Rect(1290, floorY-295, 1350, floorY-255),  // 75px up (was 90, borderline)
+		image.Rect(1400, floorY-370, 1460, floorY-330),  // 75px up (was 90+, impossible)
 
 		// Screen 2-3: high altitude crossing -- very narrow platforms
-		image.Rect(1560, floorY-380, 1600, floorY-350),
-		image.Rect(1680, floorY-360, 1720, floorY-330),
-		image.Rect(1800, floorY-390, 1840, floorY-360),
-		image.Rect(1920, floorY-350, 1960, floorY-320),
-		image.Rect(2040, floorY-380, 2080, floorY-350),
+		image.Rect(1560, floorY-350, 1600, floorY-320),  // 20px down
+		image.Rect(1680, floorY-340, 1720, floorY-310),  // 10px down
+		image.Rect(1800, floorY-360, 1840, floorY-330),  // 20px up
+		image.Rect(1920, floorY-340, 1960, floorY-310),  // 20px down
+		image.Rect(2040, floorY-360, 2080, floorY-330),  // 20px up
 
 		// Screen 3: rapid descent -- staircase down with small landings
-		image.Rect(2180, floorY-320, 2240, floorY-280),
-		image.Rect(2300, floorY-240, 2360, floorY-200),
-		image.Rect(2420, floorY-160, 2480, floorY-120),
-		image.Rect(2540, floorY-80, 2600, floorY-40),
+		image.Rect(2180, floorY-300, 2240, floorY-260),  // 60px down
+		image.Rect(2300, floorY-220, 2360, floorY-180),  // 80px down
+		image.Rect(2420, floorY-140, 2480, floorY-100),  // 80px down
+		image.Rect(2540, floorY-60, 2600, floorY-20),    // 80px down
 
-		// Screen 3-4: the gauntlet -- alternating high/low with wide gaps
-		image.Rect(2720, floorY-200, 2790, floorY-160),
-		image.Rect(2900, floorY-60, 2960, floorY-20),
-		image.Rect(3080, floorY-220, 3140, floorY-180),
-		image.Rect(3260, floorY-80, 3320, floorY-40),
-		image.Rect(3440, floorY-240, 3510, floorY-200),
+		// Screen 3-4: the gauntlet -- alternating high/low (max 80px swings)
+		image.Rect(2720, floorY-140, 2790, floorY-100),  // 80px up (was 120, impossible)
+		image.Rect(2900, floorY-80, 2960, floorY-40),    // 60px down
+		image.Rect(3080, floorY-160, 3140, floorY-120),  // 80px up (was 160, impossible)
+		image.Rect(3260, floorY-80, 3320, floorY-40),    // 80px down
+		image.Rect(3440, floorY-160, 3510, floorY-120),  // 80px up (was 160, impossible)
 
 		// Screen 4: final climb to the goal
-		image.Rect(3620, floorY-160, 3680, floorY-120),
-		image.Rect(3740, floorY-260, 3800, floorY-220),
-		image.Rect(3880, floorY-340, 3950, floorY-300),
+		image.Rect(3620, floorY-160, 3680, floorY-120),  // same height
+		image.Rect(3740, floorY-240, 3800, floorY-200),  // 80px up (was 100, impossible)
+		image.Rect(3880, floorY-310, 3950, floorY-270),  // 70px up
 
 		// Goal platform -- small, must earn it
-		image.Rect(4060, floorY-280, 4200, floorY-220),
+		image.Rect(4060, floorY-280, 4200, floorY-220),  // 30px down
 	}
 
 	goal := image.Rect(4100, floorY-300, 4180, floorY-220)
 	startX := 40.0
 	startY := float64(floorY - 40)
 
+	palms := []PalmTree{
+		{X: 50, Y: float64(floorY)},
+		{X: 880, Y: float64(floorY - 60)},
+		{X: 1700, Y: float64(floorY - 340)},
+		{X: 2500, Y: float64(floorY - 20)},
+		{X: 3600, Y: float64(floorY - 120)},
+	}
+
 	return &Level{
 		Platforms: platforms,
 		Goal:      goal,
+		PalmTrees: palms,
 		Width:     w,
 		Height:    h,
 		StartX:    startX,
