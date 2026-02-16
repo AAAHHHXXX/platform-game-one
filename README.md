@@ -1,6 +1,6 @@
 # Platformer
 
-A fun 2D platformer game! Jump across platforms, dodge gaps, and reach the finish line across 3 levels. You play as a rolling ball with eyes (or a triangle, or a hexagon -- your choice!).
+A fun 2D platformer game! Jump across platforms, dodge gaps, and reach the finish line across 3 levels. You play as a rolling ball with eyes (or a triangle, or a hexagon -- your choice!). 
 
 ## How to play
 
