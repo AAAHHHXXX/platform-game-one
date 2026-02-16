@@ -41,24 +41,13 @@ Built a 2D platformer from scratch in Go with Ebitengine. Started from an empty 
 - Added `ThirdLevel()` with precision platforming: small platforms, ascending tower, high altitude crossing, gauntlet, final climb
 - TotalLevels bumped to 3
 
-### Phase 7: Fixed impossible jumps in level 3
-- Analyzed all jumps against player physics (max jump height = 90px)
-- Found 7 impossible/borderline jumps where upward height > 90px
-- Fixed all: capped upward height differences to 75-80px
-- Affected sections: screen 1 platform 4->5, ascending tower steps, descent-to-gauntlet transition, all gauntlet low-to-high jumps, final climb
-
-### Phase 8: Visual overhaul (latest commit on main)
-- **Sunset beach background**: Pre-rendered gradient (purple sky -> orange horizon -> blue water -> tan sand) with sun disc. Parallax scrolling at 15% camera speed.
-- **Palm trees**: Added `PalmTree` struct to Level. 5-7 decorative trees per level. Pre-rendered image with brown trunk, green leaf-shaped fronds (vector paths), and coconuts. No collision.
-- **Pina Colada lyrics**: Full lyrics of "Escape (The Pina Colada Song)" by Rupert Holmes scroll right-to-left as a marquee at top of screen.
-- **Platform color**: Changed from green (`#4A7C59`) to magenta pink (`#E03E8C`).
-
 ## Current codebase state
 
 ### Git
 - **Branch**: `main` (3 commits)
-- **Commits**: `d2d4b0e` Initial -> `09295f3` More levels/characters -> `ac07e20` Sunset/palms/lyrics
-- **Feature branch**: `feature/missionary-megans-updates` exists (may have divergent changes)
+  - **Commits**: `d2d4b0e` Initial -> `09295f3` More levels/characters -> `add commmit SHA` update markdown files
+- **Feature branch**: `feature/missionary-megans-updates` (2 commits)
+  - **Commits**: `add commit SHA` fix impossible jumps -> `add commit SHA` add sunset/palms/lyrics -> `add commmit SHA` update markdown files
 - **Remote**: GitHub (origin)
 
 ### File structure
