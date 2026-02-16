@@ -129,6 +129,140 @@ func (l *Level) ResolveCollision(rect image.Rectangle, vx, vy float64) (newX, ne
 	return newX, newY, newVX, newVY, grounded
 }
 
+// SecondLevel returns the second level: 4 screens wide, different layout, similar difficulty.
+func SecondLevel(screenW, screenH int) *Level {
+	w := screenW * 4
+	h := screenH * 2
+	floorY := h - 48
+
+	platforms := []image.Rectangle{
+		// No full ground -- floating platforms only, with a floor on the far edges
+		// Start platform
+		image.Rect(0, floorY, 300, h),
+
+		// Scattered low platforms (screen 1)
+		image.Rect(360, floorY-60, 480, floorY),
+		image.Rect(540, floorY-130, 660, floorY-60),
+		image.Rect(720, floorY-60, 840, floorY),
+
+		// Zigzag section (screen 2)
+		image.Rect(920, floorY-100, 1020, floorY-40),
+		image.Rect(1060, floorY-200, 1160, floorY-140),
+		image.Rect(1200, floorY-100, 1300, floorY-40),
+		image.Rect(1340, floorY-200, 1440, floorY-140),
+		image.Rect(1480, floorY-300, 1580, floorY-240),
+
+		// Bridge of narrow platforms (screen 3)
+		image.Rect(1660, floorY-200, 1720, floorY-160),
+		image.Rect(1780, floorY-200, 1840, floorY-160),
+		image.Rect(1900, floorY-200, 1960, floorY-160),
+		image.Rect(2020, floorY-200, 2080, floorY-160),
+
+		// Descent with wide platforms (screen 3-4)
+		image.Rect(2160, floorY-140, 2320, floorY-60),
+		image.Rect(2380, floorY-60, 2540, floorY),
+
+		// Climbing section (screen 4)
+		image.Rect(2600, floorY-80, 2720, floorY),
+		image.Rect(2700, floorY-180, 2820, floorY-100),
+		image.Rect(2840, floorY-280, 2960, floorY-200),
+		image.Rect(2980, floorY-180, 3100, floorY-100),
+		image.Rect(3120, floorY-280, 3240, floorY-200),
+
+		// Ledge walk to the goal
+		image.Rect(3320, floorY-220, 3500, floorY-160),
+
+		// Long run to goal
+		image.Rect(3560, floorY-120, 3800, floorY),
+
+		// Goal platform
+		image.Rect(3860, floorY-200, w, floorY),
+	}
+
+	goal := image.Rect(w-120, floorY-220, w-24, floorY-120)
+	startX := 80.0
+	startY := float64(floorY - 40)
+
+	return &Level{
+		Platforms: platforms,
+		Goal:      goal,
+		Width:     w,
+		Height:    h,
+		StartX:    startX,
+		StartY:    startY,
+		DeathY:    float64(floorY + 100),
+	}
+}
+
+// ThirdLevel returns the third level: 4 screens wide, harder than level 2.
+// Precision platforming with small platforms, wide gaps, and no safety nets.
+func ThirdLevel(screenW, screenH int) *Level {
+	w := screenW * 4
+	h := screenH * 2
+	floorY := h - 48
+
+	platforms := []image.Rectangle{
+		// Tiny start platform
+		image.Rect(0, floorY, 160, h),
+
+		// Screen 1: precision hops on small floating platforms with big gaps
+		image.Rect(240, floorY-80, 310, floorY-40),
+		image.Rect(400, floorY-160, 460, floorY-120),
+		image.Rect(540, floorY-80, 600, floorY-40),
+		image.Rect(700, floorY-180, 760, floorY-140),
+		image.Rect(850, floorY-100, 910, floorY-60),
+
+		// Screen 2: ascending tower -- tiny ledges going up
+		image.Rect(1000, floorY-60, 1060, floorY-20),
+		image.Rect(1100, floorY-140, 1150, floorY-100),
+		image.Rect(1200, floorY-220, 1250, floorY-180),
+		image.Rect(1290, floorY-310, 1350, floorY-270),
+		image.Rect(1400, floorY-400, 1460, floorY-360),
+
+		// Screen 2-3: high altitude crossing -- very narrow platforms
+		image.Rect(1560, floorY-380, 1600, floorY-350),
+		image.Rect(1680, floorY-360, 1720, floorY-330),
+		image.Rect(1800, floorY-390, 1840, floorY-360),
+		image.Rect(1920, floorY-350, 1960, floorY-320),
+		image.Rect(2040, floorY-380, 2080, floorY-350),
+
+		// Screen 3: rapid descent -- staircase down with small landings
+		image.Rect(2180, floorY-320, 2240, floorY-280),
+		image.Rect(2300, floorY-240, 2360, floorY-200),
+		image.Rect(2420, floorY-160, 2480, floorY-120),
+		image.Rect(2540, floorY-80, 2600, floorY-40),
+
+		// Screen 3-4: the gauntlet -- alternating high/low with wide gaps
+		image.Rect(2720, floorY-200, 2790, floorY-160),
+		image.Rect(2900, floorY-60, 2960, floorY-20),
+		image.Rect(3080, floorY-220, 3140, floorY-180),
+		image.Rect(3260, floorY-80, 3320, floorY-40),
+		image.Rect(3440, floorY-240, 3510, floorY-200),
+
+		// Screen 4: final climb to the goal
+		image.Rect(3620, floorY-160, 3680, floorY-120),
+		image.Rect(3740, floorY-260, 3800, floorY-220),
+		image.Rect(3880, floorY-340, 3950, floorY-300),
+
+		// Goal platform -- small, must earn it
+		image.Rect(4060, floorY-280, 4200, floorY-220),
+	}
+
+	goal := image.Rect(4100, floorY-300, 4180, floorY-220)
+	startX := 40.0
+	startY := float64(floorY - 40)
+
+	return &Level{
+		Platforms: platforms,
+		Goal:      goal,
+		Width:     w,
+		Height:    h,
+		StartX:    startX,
+		StartY:    startY,
+		DeathY:    float64(floorY + 100),
+	}
+}
+
 // InGoal returns true if the given rect overlaps the goal area.
 func (l *Level) InGoal(rect image.Rectangle) bool {
 	return rect.Min.X < l.Goal.Max.X && rect.Max.X > l.Goal.Min.X &&

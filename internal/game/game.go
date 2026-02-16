@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"image/color"
 
 	"platform-game-one/internal/camera"
@@ -12,8 +13,9 @@ import (
 )
 
 const (
-	ScreenWidth  = 640
-	ScreenHeight = 360
+	ScreenWidth  = 1280
+	ScreenHeight = 720
+	TotalLevels  = 3
 )
 
 type gameState int
@@ -25,23 +27,40 @@ const (
 
 // Game implements ebiten.Game.
 type Game struct {
-	player *player.Player
-	level  *level.Level
-	camera *camera.Camera
-	state  gameState
+	player   *player.Player
+	level    *level.Level
+	camera   *camera.Camera
+	state    gameState
+	levelNum int // 1-based
 }
 
-// New creates a new Game.
+// New creates a new Game starting at level 1.
 func New() *Game {
 	lv := level.FirstLevel(ScreenWidth, ScreenHeight)
 	pl := player.New(lv.StartX, lv.StartY)
 	cam := camera.New()
 	return &Game{
-		player: pl,
-		level:  lv,
-		camera: cam,
-		state:  statePlaying,
+		player:   pl,
+		level:    lv,
+		camera:   cam,
+		state:    statePlaying,
+		levelNum: 1,
 	}
+}
+
+func (g *Game) loadLevel(num int) {
+	switch num {
+	case 1:
+		g.level = level.FirstLevel(ScreenWidth, ScreenHeight)
+	case 2:
+		g.level = level.SecondLevel(ScreenWidth, ScreenHeight)
+	case 3:
+		g.level = level.ThirdLevel(ScreenWidth, ScreenHeight)
+	}
+	g.player.Respawn(g.level.StartX, g.level.StartY)
+	g.camera = camera.New()
+	g.levelNum = num
+	g.state = statePlaying
 }
 
 // Update runs each tick.
@@ -65,12 +84,16 @@ func (g *Game) Update() error {
 	}
 	// Win: reached goal
 	if g.level.InGoal(g.player.Rect()) {
-		g.state = stateWon
+		if g.levelNum < TotalLevels {
+			g.loadLevel(g.levelNum + 1)
+		} else {
+			g.state = stateWon
+		}
 	}
 
 	// Camera follow
-	centerX := g.player.X + player.Width/2
-	centerY := g.player.Y + player.Height/2
+	centerX := g.player.CenterX()
+	centerY := g.player.CenterY()
 	g.camera.Update(centerX, centerY, g.level.Width, g.level.Height, ScreenWidth, ScreenHeight)
 
 	return nil
@@ -78,13 +101,10 @@ func (g *Game) Update() error {
 
 // Draw renders the game.
 func (g *Game) Draw(screen *ebiten.Image) {
-	// Clear
 	screen.Fill(color.RGBA{R: 0x1a, G: 0x1a, B: 0x2e, A: 0xff})
 
-	// Draw level (platforms and goal) in screen space
 	for _, plat := range g.level.Platforms {
 		sx, sy := g.camera.WorldToScreen(float64(plat.Min.X), float64(plat.Min.Y))
-		// Cull off-screen
 		if sx+plat.Dx() < 0 || sy+plat.Dy() < 0 || sx > ScreenWidth || sy > ScreenHeight {
 			continue
 		}
@@ -108,8 +128,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	px, py := g.camera.WorldToScreen(g.player.X, g.player.Y)
 	g.player.Draw(screen, px, py)
 
+	// HUD
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Level %d / %d   [Tab] switch shape", g.levelNum, TotalLevels))
+
 	if g.state == stateWon {
-		ebitenutil.DebugPrint(screen, "You win! Reach the end.")
+		ebitenutil.DebugPrint(screen, "\n\n  You beat all three levels! Congratulations!")
 	}
 }
 

@@ -1,3 +1,4 @@
+
 # CLAUDE.md
 
 This file helps AI and humans work on the platformer codebase.
