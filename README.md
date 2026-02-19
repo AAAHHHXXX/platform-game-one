@@ -4,9 +4,9 @@ A fun 2D platformer game! Jump across platforms, dodge gaps, and reach the finis
 
 ## How to play
 
-- **W** -- Jump
-- **A** -- Move left
-- **D** -- Move right
+- **Spacebar** -- Jump
+- **A** or **Left Arrow** -- Move left
+- **D** or **Right Arrow** -- Move right
 - **Tab** -- Change your character's shape
 
 ## How to set up and run the game on your computer
@@ -79,7 +79,7 @@ Type this and press Enter:
 go run ./cmd/game
 ```
 
-A window should pop up with the game! Use **W**, **A**, and **D** on your keyboard to move and jump. Try to reach the gold box at the end of each level.
+A window should pop up with the game! Use **Spacebar** to jump and **A**/**D** or the **Arrow Keys** to move. Try to reach the gold box at the end of each level.
 
 ### If something goes wrong
 

@@ -71,16 +71,16 @@ func (p *Player) Update(dt float64) {
 		p.Shape = (p.Shape + 1) % shapeCount
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		p.JumpBuffer = JumpBufferMax
 	}
 	if p.JumpBuffer > 0 {
 		p.JumpBuffer -= dt
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
+	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		p.VX = -MoveSpeed
-	} else if ebiten.IsKeyPressed(ebiten.KeyD) {
+	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		p.VX = MoveSpeed
 	} else {
 		p.VX = 0
